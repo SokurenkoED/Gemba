@@ -19,7 +19,7 @@ namespace Gemba
             List<ImageElemObject> ImageElems = new List<ImageElemObject>(); // Список картинок-элементов на плоскости
             List<ImageJunctionObject> ImageJunctions = new List<ImageJunctionObject>(); // Список картинок-связей на плоскости
             List<Elem> Elems = new List<Elem>(); // Список расчетных элементов
-            List<IJunction> Junctions = new List<IJunction>(); // Список связей
+            List<Junction> Junctions = new List<Junction>(); // Список связей
 
             List<IAction> Actions = new List<IAction>();
             List<IVariable> Variables = new List<IVariable>();
@@ -62,6 +62,72 @@ namespace Gemba
             ImageExitElem Exit1 = new ImageExitElem(ref Elems) { ImageElemId = ImageElems.Count + 1, ImageElemValue = "????????" };
             Exit1.SetParamsToElem();
             ImageElems.Add(Exit1);
+
+            #endregion
+
+            #region Создаем картинки связей на рабочей плоскости
+
+            ImageJunctionObject Junction1 = new ImageJunctionObject(ref Junctions)
+            {
+                ImageJunctId = ImageJunctions.Count + 1,
+                ImageJunctFromElemId = 3,
+                ImageJunctFromPortId = 1,
+                ImageJunctToElemId = 1,
+                ImageJunctToPortId = 1,
+                ImageJunctType = 1488
+            };
+            Junction1.SetParamsToJunction();
+            ImageJunctions.Add(Junction1);
+
+            ImageJunctionObject Junction2 = new ImageJunctionObject(ref Junctions)
+            {
+                ImageJunctId = ImageJunctions.Count + 1,
+                ImageJunctFromElemId = 4,
+                ImageJunctFromPortId = 1,
+                ImageJunctToElemId = 2,
+                ImageJunctToPortId = 1,
+                ImageJunctType = 1488
+            };
+            Junction2.SetParamsToJunction();
+            ImageJunctions.Add(Junction2);
+
+            ImageJunctionObject Junction3 = new ImageJunctionObject(ref Junctions)
+            {
+                ImageJunctId = ImageJunctions.Count + 1,
+                ImageJunctFromElemId = 5,
+                ImageJunctFromPortId = 1,
+                ImageJunctToElemId = 2,
+                ImageJunctToPortId = 2,
+                ImageJunctType = 1488
+            };
+            Junction3.SetParamsToJunction();
+            ImageJunctions.Add(Junction3);
+
+            ImageJunctionObject Junction4 = new ImageJunctionObject(ref Junctions)
+            {
+                ImageJunctId = ImageJunctions.Count + 1,
+                ImageJunctFromElemId = 2,
+                ImageJunctFromPortId = 1,
+                ImageJunctToElemId = 1,
+                ImageJunctToPortId = 2,
+                ImageJunctType = 1488
+            };
+            Junction4.SetParamsToJunction();
+            ImageJunctions.Add(Junction4);
+
+            ImageJunctionObject Junction5 = new ImageJunctionObject(ref Junctions)
+            {
+                ImageJunctId = ImageJunctions.Count + 1,
+                ImageJunctFromElemId = 1,
+                ImageJunctFromPortId = 1,
+                ImageJunctToElemId = 6,
+                ImageJunctToPortId = 1,
+                ImageJunctType = 1488
+            };
+            Junction5.SetParamsToJunction();
+            ImageJunctions.Add(Junction5);
+
+
 
             #endregion
 
