@@ -55,6 +55,7 @@ namespace Gemba
             Elems.Add(new Const { ElemId = 5, Operation = 3, ElemValue = "150" });
             Elems.Add(new Exit { ElemId = 6, Operation = 5, ElemValue = "???????????" });
 
+<<<<<<< Updated upstream
 
             #endregion
 
@@ -67,6 +68,45 @@ namespace Gemba
             Junctions.Add(new Junction { JuncId = 5, FromElem = 1, FromPort = 1, ToElem = 6, ToPort = 1 });
 
             #endregion
+=======
+            int i1 = 1;
+            int i2 = 2;
+            int i3 = 3; 
+            int i4 = 4;
+            int i5 = 5;
+            int i6 = 6;
+            int j1 = 1;
+            int j2 = 2;
+            int j3 = 3;
+            int j4 = 4;
+            int j5 = 5;
+
+            for (int i = 0; i < 500; i++)
+            {
+                Elems.Add(new Summer { ElemId = i1, Operation = 1 });
+                Elems.Add(new Subtraction { ElemId = i2, Operation = 2 });
+                Elems.Add(new Const { ElemId = i3, Operation = 3, ElemValue = "350" });
+                Elems.Add(new Const { ElemId = i4, Operation = 3, ElemValue = "100" });
+                Elems.Add(new Const { ElemId = i5, Operation = 3, ElemValue = "150" });
+                Elems.Add(new Exit { ElemId = i6, Operation = 5, ElemValue = "???????????" });
+                Junctions.Add(new Junction { JuncId = j1, FromElem = i3, FromPort = 1, ToElem = i1, ToPort = 1 });
+                Junctions.Add(new Junction { JuncId = j2, FromElem = i4, FromPort = 1, ToElem = i2, ToPort = 1 });
+                Junctions.Add(new Junction { JuncId = j3, FromElem = i5, FromPort = 1, ToElem = i2, ToPort = 2 });
+                Junctions.Add(new Junction { JuncId = j4, FromElem = i2, FromPort = 1, ToElem = i1, ToPort = 2 });
+                Junctions.Add(new Junction { JuncId = j5, FromElem = i1, FromPort = 1, ToElem = i6, ToPort = 1 });
+                i1 += 6;
+                i2 += 6;
+                i3 += 6;
+                i4 += 6;
+                i5 += 6;
+                i6 += 6;
+                j1 += 5;
+                j2 += 5;
+                j3 += 5;
+                j4 += 5;
+                j5 += 5;
+            }
+>>>>>>> Stashed changes
 
 
             #region Создали переменные
