@@ -1,4 +1,7 @@
 ﻿
+using Gemba.ImageJunctionsObjects;
+using Gemba.ImageElemsObjects;
+using Gemba.ImageObjects;
 using Gemba.IObjects;
 using Gemba.Objects;
 using System.Collections.Generic;
@@ -13,12 +16,17 @@ namespace Gemba
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            HashSet<Elem> Elems = new HashSet<Elem>(); // 6 шт
-            HashSet<IJunction> Junctions = new HashSet<IJunction>(); // 5 шт
+            List<ImageElemObject> ImageElems = new List<ImageElemObject>(); // Список картинок-элементов на плоскости
+            List<ImageJunctionObject> ImageJunctions = new List<ImageJunctionObject>(); // Список картинок-связей на плоскости
+            List<Elem> Elems = new List<Elem>(); // Список расчетных элементов
+            List<IJunction> Junctions = new List<IJunction>(); // Список связей
+
             List<IAction> Actions = new List<IAction>();
-            HashSet<IVariable> Variables = new HashSet<IVariable>();
+            List<IVariable> Variables = new List<IVariable>();
 
             int id = 0; // Переменная для записи Variables
+
+
 
             // Операции элементов
             // 1 - сумма
@@ -31,65 +39,34 @@ namespace Gemba
             // 5 - выход
             // 1 - связь
 
-            //#region Создаем элементы
-
-            //Elems.Add(new Summer { ElemId = 1, Operation = 1 });
-            //Elems.Add(new Subtraction { ElemId = 2, Operation = 2 });
-            //Elems.Add(new Const { ElemId = 3, Operation = 3, ElemValue = "350" });
-            //Elems.Add(new Const { ElemId = 4, Operation = 3, ElemValue = "100" });
-            //Elems.Add(new Const { ElemId = 5, Operation = 3, ElemValue = "150" });
-            //Elems.Add(new Exit { ElemId = 6, Operation = 5, ElemValue = "???????????" });
+            #region Создаем 
 
 
-            //#endregion
 
-            //#region Создаем связи
+            #endregion
 
-            //Junctions.Add(new Junction {JuncId = 1, FromElem = 3, FromPort = 1, ToElem = 1, ToPort = 1 });
-            //Junctions.Add(new Junction { JuncId = 2, FromElem = 4, FromPort = 1, ToElem = 2, ToPort = 1 });
-            //Junctions.Add(new Junction { JuncId = 3, FromElem = 5, FromPort = 1, ToElem = 2, ToPort = 2 });
-            //Junctions.Add(new Junction { JuncId = 4, FromElem = 2, FromPort = 1, ToElem = 1, ToPort = 2 });
-            //Junctions.Add(new Junction { JuncId = 5, FromElem = 1, FromPort = 1, ToElem = 6, ToPort = 1 });
 
-            //#endregion
+            #region Создаем элементы
 
-            int i1 = 1;
-            int i2 = 2;
-            int i3 = 3; 
-            int i4 = 4;
-            int i5 = 5;
-            int i6 = 6;
-            int j1 = 1;
-            int j2 = 2;
-            int j3 = 3;
-            int j4 = 4;
-            int j5 = 5;
+            Elems.Add(new Summer { ElemId = 1, Operation = 1 });
+            Elems.Add(new Subtraction { ElemId = 2, Operation = 2 });
+            Elems.Add(new Const { ElemId = 3, Operation = 3, ElemValue = "350" });
+            Elems.Add(new Const { ElemId = 4, Operation = 3, ElemValue = "100" });
+            Elems.Add(new Const { ElemId = 5, Operation = 3, ElemValue = "150" });
+            Elems.Add(new Exit { ElemId = 6, Operation = 5, ElemValue = "???????????" });
 
-            for (int i = 0; i < 20000; i++)
-            {
-                Elems.Add(new Summer { ElemId = i1, Operation = 1 });
-                Elems.Add(new Subtraction { ElemId = i2, Operation = 2 });
-                Elems.Add(new Const { ElemId = i3, Operation = 3, ElemValue = "350" });
-                Elems.Add(new Const { ElemId = i4, Operation = 3, ElemValue = "100" });
-                Elems.Add(new Const { ElemId = i5, Operation = 3, ElemValue = "150" });
-                Elems.Add(new Exit { ElemId = i6, Operation = 5, ElemValue = "???????????" });
-                Junctions.Add(new Junction { JuncId = j1, FromElem = i3, FromPort = 1, ToElem = i1, ToPort = 1 });
-                Junctions.Add(new Junction { JuncId = j2, FromElem = i4, FromPort = 1, ToElem = i2, ToPort = 1 });
-                Junctions.Add(new Junction { JuncId = j3, FromElem = i5, FromPort = 1, ToElem = i2, ToPort = 2 });
-                Junctions.Add(new Junction { JuncId = j4, FromElem = i2, FromPort = 1, ToElem = i1, ToPort = 2 });
-                Junctions.Add(new Junction { JuncId = j5, FromElem = i1, FromPort = 1, ToElem = i6, ToPort = 1 });
-                i1 += 6;
-                i2 += 6;
-                i3 += 6;
-                i4 += 6;
-                i5 += 6;
-                i6 += 6;
-                j1 += 5;
-                j2 += 5;
-                j3 += 5;
-                j4 += 5;
-                j5 += 5;
-            }
+
+            #endregion
+
+            #region Создаем связи
+
+            Junctions.Add(new Junction { JuncId = 1, FromElem = 3, FromPort = 1, ToElem = 1, ToPort = 1 });
+            Junctions.Add(new Junction { JuncId = 2, FromElem = 4, FromPort = 1, ToElem = 2, ToPort = 1 });
+            Junctions.Add(new Junction { JuncId = 3, FromElem = 5, FromPort = 1, ToElem = 2, ToPort = 2 });
+            Junctions.Add(new Junction { JuncId = 4, FromElem = 2, FromPort = 1, ToElem = 1, ToPort = 2 });
+            Junctions.Add(new Junction { JuncId = 5, FromElem = 1, FromPort = 1, ToElem = 6, ToPort = 1 });
+
+            #endregion
 
 
             #region Создали переменные
@@ -209,7 +186,7 @@ namespace Gemba
             #region Присваивание ID всем действиям
 
             id = 0;
-            HashSet<int> OutArr = new HashSet<int>();
+            List<int> OutArr = new List<int>();
             foreach (var Action in Actions)
             {
                 if (Action.Operation == 3)

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Gemba.ImageElemsObjects
 {
-    class ImageConstElem : ImageObject
+    class ImageConstElem : ImageElemObject
     {
     }
 }
