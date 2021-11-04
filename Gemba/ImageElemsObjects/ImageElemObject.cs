@@ -14,5 +14,6 @@ namespace Gemba.ImageObjects
         public float ImageElemFlipPort { get ; set ; }
         public string ImageElemValue { get ; set ; }
         public int ImageElemPortsCount { get ; set ; }
+
     }
 }

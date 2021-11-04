@@ -26,8 +26,6 @@ namespace Gemba
 
             int id = 0; // Переменная для записи Variables
 
-
-
             // Операции элементов
             // 1 - сумма
             // 2 - вычитание
@@ -39,9 +37,31 @@ namespace Gemba
             // 5 - выход
             // 1 - связь
 
-            #region Создаем 
+            #region Создаем картинки элементов на рабочей плоскости
 
+            ImageSummerElem Sum1 = new ImageSummerElem(ref Elems) { ImageElemId = ImageElems.Count + 1};
+            Sum1.SetParamsToElem();
+            ImageElems.Add(Sum1);
 
+            ImageSubstructionElem Minus1 = new ImageSubstructionElem(ref Elems) { ImageElemId = ImageElems.Count + 1};
+            Minus1.SetParamsToElem();
+            ImageElems.Add(Minus1);
+
+            ImageConstElem Const1 = new ImageConstElem(ref Elems) { ImageElemId = ImageElems.Count + 1, ImageElemValue = "200"};
+            Const1.SetParamsToElem();
+            ImageElems.Add(Const1);
+
+            ImageConstElem Const2 = new ImageConstElem(ref Elems) { ImageElemId = ImageElems.Count + 1, ImageElemValue = "100" };
+            Const2.SetParamsToElem();
+            ImageElems.Add(Const2);
+
+            ImageConstElem Const3 = new ImageConstElem(ref Elems) { ImageElemId = ImageElems.Count + 1, ImageElemValue = "50" };
+            Const3.SetParamsToElem();
+            ImageElems.Add(Const3);
+
+            ImageExitElem Exit1 = new ImageExitElem(ref Elems) { ImageElemId = ImageElems.Count + 1, ImageElemValue = "????????" };
+            Exit1.SetParamsToElem();
+            ImageElems.Add(Exit1);
 
             #endregion
 
@@ -66,32 +86,7 @@ namespace Gemba
             Junctions.Add(new Junction { JuncId = 4, FromElem = 2, FromPort = 1, ToElem = 1, ToPort = 2 });
             Junctions.Add(new Junction { JuncId = 5, FromElem = 1, FromPort = 1, ToElem = 6, ToPort = 1 });
 
-            for (int i = 0; i < 20000; i++)
-            {
-                Elems.Add(new Summer { ElemId = i1, Operation = 1 });
-                Elems.Add(new Subtraction { ElemId = i2, Operation = 2 });
-                Elems.Add(new Const { ElemId = i3, Operation = 3, ElemValue = "350" });
-                Elems.Add(new Const { ElemId = i4, Operation = 3, ElemValue = "100" });
-                Elems.Add(new Const { ElemId = i5, Operation = 3, ElemValue = "150" });
-                Elems.Add(new Exit { ElemId = i6, Operation = 5, ElemValue = "???????????" });
-                Junctions.Add(new Junction { JuncId = j1, FromElem = i3, FromPort = 1, ToElem = i1, ToPort = 1 });
-                Junctions.Add(new Junction { JuncId = j2, FromElem = i4, FromPort = 1, ToElem = i2, ToPort = 1 });
-                Junctions.Add(new Junction { JuncId = j3, FromElem = i5, FromPort = 1, ToElem = i2, ToPort = 2 });
-                Junctions.Add(new Junction { JuncId = j4, FromElem = i2, FromPort = 1, ToElem = i1, ToPort = 2 });
-                Junctions.Add(new Junction { JuncId = j5, FromElem = i1, FromPort = 1, ToElem = i6, ToPort = 1 });
-                i1 += 6;
-                i2 += 6;
-                i3 += 6;
-                i4 += 6;
-                i5 += 6;
-                i6 += 6;
-                j1 += 5;
-                j2 += 5;
-                j3 += 5;
-                j4 += 5;
-                j5 += 5;
-            }
-
+            #endregion
 
             #region Создали переменные
 
