@@ -21,6 +21,8 @@ namespace Gemba
             List<Elem> Elems = new List<Elem>(); // Список расчетных элементов
             List<Junction> Junctions = new List<Junction>(); // Список связей
 
+            List<Junction> ConstJunctions = new List<Junction>(); // Здесь записаны все связи, у которых левый элемент - константа
+
             List<IAction> Actions = new List<IAction>();
             List<IVariable> Variables = new List<IVariable>();
 
@@ -76,7 +78,7 @@ namespace Gemba
                 ImageJunctToPortId = 1,
                 ImageJunctType = 1488
             };
-            Junction1.SetParamsToJunction();
+            Junction1.SetParamsToJunction(ref Elems, ref ConstJunctions);
             ImageJunctions.Add(Junction1);
 
             ImageJunctionObject Junction2 = new ImageJunctionObject(ref Junctions)
@@ -88,7 +90,7 @@ namespace Gemba
                 ImageJunctToPortId = 1,
                 ImageJunctType = 1488
             };
-            Junction2.SetParamsToJunction();
+            Junction2.SetParamsToJunction(ref Elems, ref ConstJunctions);
             ImageJunctions.Add(Junction2);
 
             ImageJunctionObject Junction3 = new ImageJunctionObject(ref Junctions)
@@ -100,7 +102,7 @@ namespace Gemba
                 ImageJunctToPortId = 2,
                 ImageJunctType = 1488
             };
-            Junction3.SetParamsToJunction();
+            Junction3.SetParamsToJunction(ref Elems, ref ConstJunctions);
             ImageJunctions.Add(Junction3);
 
             ImageJunctionObject Junction4 = new ImageJunctionObject(ref Junctions)
@@ -112,7 +114,7 @@ namespace Gemba
                 ImageJunctToPortId = 2,
                 ImageJunctType = 1488
             };
-            Junction4.SetParamsToJunction();
+            Junction4.SetParamsToJunction(ref Elems, ref ConstJunctions);
             ImageJunctions.Add(Junction4);
 
             ImageJunctionObject Junction5 = new ImageJunctionObject(ref Junctions)
@@ -124,35 +126,25 @@ namespace Gemba
                 ImageJunctToPortId = 1,
                 ImageJunctType = 1488
             };
-            Junction5.SetParamsToJunction();
+            Junction5.SetParamsToJunction(ref Elems, ref ConstJunctions);
             ImageJunctions.Add(Junction5);
 
 
 
             #endregion
 
+            #region Пишем действия
 
-            #region Создаем элементы
-
-            Elems.Add(new Summer { ElemId = 1, Operation = 1 });
-            Elems.Add(new Subtraction { ElemId = 2, Operation = 2 });
-            Elems.Add(new Const { ElemId = 3, Operation = 3, ElemValue = "350" });
-            Elems.Add(new Const { ElemId = 4, Operation = 3, ElemValue = "100" });
-            Elems.Add(new Const { ElemId = 5, Operation = 3, ElemValue = "150" });
-            Elems.Add(new Exit { ElemId = 6, Operation = 5, ElemValue = "???????????" });
-
+            foreach (var ConstJunction in ConstJunctions) // Надо сначала создать переменные
+            {
+                Actions.Add(new Action { Operation = 3, In = new List<int>() { Elems[ConstJunction.FromElem].ElemId }, Out1 = Elems[ConstJunction.ToElem].ElemId });
+            }
 
             #endregion
 
-            #region Создаем связи
 
-            Junctions.Add(new Junction { JuncId = 1, FromElem = 3, FromPort = 1, ToElem = 1, ToPort = 1 });
-            Junctions.Add(new Junction { JuncId = 2, FromElem = 4, FromPort = 1, ToElem = 2, ToPort = 1 });
-            Junctions.Add(new Junction { JuncId = 3, FromElem = 5, FromPort = 1, ToElem = 2, ToPort = 2 });
-            Junctions.Add(new Junction { JuncId = 4, FromElem = 2, FromPort = 1, ToElem = 1, ToPort = 2 });
-            Junctions.Add(new Junction { JuncId = 5, FromElem = 1, FromPort = 1, ToElem = 6, ToPort = 1 });
 
-            #endregion
+            // <----------------------------------------------- Старый макет ----------------------------------------------->
 
             #region Создали переменные
 

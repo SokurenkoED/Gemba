@@ -20,15 +20,22 @@ namespace Gemba.ImageJunctionsObjects
         {
             Junction1 = new Junction();
             Junctions.Add(Junction1);
+
         }
         
-        public void SetParamsToJunction()
+        public void SetParamsToJunction( ref List<Elem> Elems, ref List<Junction> ConstJunctions)
         {
             Junction1.FromElem = ImageJunctFromElemId;
             Junction1.FromPort = ImageJunctFromPortId;
             Junction1.JuncId = ImageJunctId;
             Junction1.ToElem = ImageJunctToElemId;
             Junction1.ToPort = ImageJunctToPortId;
+
+            if (Elems[Junction1.FromElem].Operation == 3)
+            {
+                ConstJunctions.Add(Junction1); // Эмитируем метод, в котором проверяется левый элемент, если это константа, то добавляем в массив
+            }
+            
         }
     }
 }
