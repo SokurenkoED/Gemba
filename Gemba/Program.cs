@@ -13,10 +13,10 @@ namespace Gemba
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            HashSet<Elem> Elems = new HashSet<Elem>(); // 6 шт
-            HashSet<IJunction> Junctions = new HashSet<IJunction>(); // 5 шт
+            List<Elem> Elems = new List<Elem>(); // 6 шт
+            List<IJunction> Junctions = new List<IJunction>(); // 5 шт
             List<IAction> Actions = new List<IAction>();
-            HashSet<IVariable> Variables = new HashSet<IVariable>();
+            List<IVariable> Variables = new List<IVariable>();
 
             int id = 0; // Переменная для записи Variables
 
@@ -91,7 +91,7 @@ namespace Gemba
                 j5 += 5;
             }
 
-
+            /*
             #region Создали переменные
 
             foreach (var Elem in Elems)
@@ -205,61 +205,193 @@ namespace Gemba
             }
 
             #endregion
-
-            #region Присваивание ID всем действиям
-
-            id = 0;
-            HashSet<int> OutArr = new HashSet<int>();
-            foreach (var Action in Actions)
+            */
+            #region Создали переменные1
+            for (int i = 0; i < 2000; i++)
             {
-                if (Action.Operation == 3)
+                for (int j = i * 60; j < i * 60 + 60; j++)
+                {
+
+                    if (Elems[j] is Const) // Если константа
+                    {
+                        id++;
+                        Const CT = (Const)Elems[j];
+                        Variables.Add(new Variable { VarId = id, VarType = 3, VarValue = CT.ElemValue });
+                    }
+                    if (Elems[j] is Exit)  // Выход
+                    {
+                        Exit exit = (Exit)Elems[j];
+                        id++;
+                        Variables.Add(new Variable { VarId = id, VarType = Elems[j].Operation, VarValue = exit.ElemValue });
+                    }
+                }
+                for (int k = i * 50; k < i * 50 + 50; k++)  // Связь
                 {
                     id++;
-                    Action.ActionId = id;
-                    OutArr.Add(Action.Out1);
+                    Variables.Add(new Variable { VarId = id, VarType = 1, VarValue = $"link{Junctions[k].JuncId}" });
                 }
             }
-            while (OutArr.Count != 0)
+
+
+            #endregion
+
+            #region Создали действия1
+            for (int i = 0; i < 2000; i++)
             {
-                foreach (var Action in Actions)
+                for (int j = i * 60; j < i * 60 + 60; j++)
                 {
-                    if (Action.ActionId == 0)
+                    List<int> JunctInId = new List<int>();
+                    int JunctOutId = -1;
+                    List<int> VarInId = new List<int>();
+                    int VarOutId = -1;
+
+                    for (int k = i * 50; k < i * 50 + 50; k++)
                     {
-                        int IsExit = 0;
-                        foreach (var In in Action.In)
+                        if (Junctions[k].FromElem == Elems[j].ElemId)
                         {
-                            foreach (var Out in OutArr)
+                            JunctOutId = Junctions[k].JuncId;
+                        }
+                        else if (Junctions[k].ToElem == Elems[j].ElemId)
+                        {
+                            JunctInId.Add(Junctions[k].JuncId);
+                        }
+                    }
+
+                    if (JunctOutId != -1 && JunctInId.Count == 0) // Элемент по типу константы
+                    {
+                        Const CT = (Const)Elems[j];
+                        for (int v = i * 90; v < i * 90 + 90; v++)
+                        {
+
+                            if (CT.ElemValue == Variables[v].VarValue)
                             {
-                                if (Out == In)
+                                VarInId.Add(Variables[v].VarId);
+                            }
+                            else if (Variables[v].VarValue.IndexOf("link") != -1)
+                            {
+                                if (JunctOutId == int.Parse(Variables[v].VarValue.Replace("link", "")))
                                 {
-                                    IsExit++;
+                                    VarOutId = Variables[v].VarId;
                                 }
                             }
                         }
+                        Actions.Add(new Action { Operation = Elems[j].Operation, In = VarInId, Out1 = VarOutId });
+                    }
 
-                        if (IsExit == Action.In.Count)
+                    if (JunctOutId == -1 && JunctInId.Count == 1) // Элемент по типу выхода
+                    {
+                        Exit exit = (Exit)Elems[j];
+                        for (int v = i * 90; v < i * 90 + 90; v++)
                         {
-                            id++;
-                            Action.ActionId = id;
-                            foreach (var In in Action.In)
+                            if (exit.ElemValue == Variables[v].VarValue)
                             {
-                                OutArr.Remove(In);
+                                VarOutId = Variables[v].VarId;
+
                             }
-                            if (Action.Operation == 5)
+                            else if (Variables[v].VarValue.IndexOf("link") != -1)
                             {
-                                OutArr.Remove(Action.Out1);
+                                if (JunctInId[0] == int.Parse(Variables[v].VarValue.Replace("link", "")))
+                                {
+                                    VarInId.Add(Variables[v].VarId);
+                                }
                             }
-                            else
-                            {
-                                OutArr.Add(Action.Out1);
-                            }
-                            
                         }
+                        Actions.Add(new Action { Operation = Elems[j].Operation, In = VarInId, Out1 = VarOutId });
+                    }
+
+                    if (JunctOutId != -1 && JunctInId.Count != 0) // Для остальных элементов
+                    {
+                        for (int v = i * 90; v < i * 90 + 90; v++)
+                        {
+                            if (Variables[v].VarValue.IndexOf("link") != -1)
+                            {
+                                foreach (var item in JunctInId)
+                                {
+                                    if (item == int.Parse(Variables[v].VarValue.Replace("link", "")))
+                                    {
+                                        VarInId.Add(Variables[v].VarId);
+                                    }
+                                }
+                                if (JunctOutId == int.Parse(Variables[v].VarValue.Replace("link", "")))
+                                {
+                                    VarOutId = Variables[v].VarId;
+                                }
+                            }
+                        }
+                        Actions.Add(new Action { Operation = Elems[j].Operation, In = VarInId, Out1 = VarOutId });
                     }
                 }
             }
 
+
+
             #endregion
+
+            #region Присваивание ID всем действиям
+            for (int i = 0; i < 2000; i++)
+            {
+                id = 0;
+                HashSet<int> OutArr = new HashSet<int>();
+                for (int j = i * 60; j < i * 60 + 60; j++)
+                {
+                    if (Actions[j].Operation == 3)
+                    {
+                        id++;
+                        Actions[j].ActionId = id;
+                        OutArr.Add(Actions[j].Out1);
+                    }
+                }
+                while (OutArr.Count != 0)
+                {
+                    for (int j = i * 60; j < i * 60 + 60; j++)
+                    {
+                        if (Actions[j].ActionId == 0)
+                        {
+                            int IsExit = 0;
+                            foreach (var In in Actions[j].In)
+                            {
+                                foreach (var Out in OutArr)
+                                {
+                                    if (Out == In)
+                                    {
+                                        IsExit++;
+                                    }
+                                }
+                            }
+
+                            if (IsExit == Actions[j].In.Count)
+                            {
+                                id++;
+                                Actions[j].ActionId = id;
+                                foreach (var In in Actions[j].In)
+                                {
+                                    OutArr.Remove(In);
+                                }
+                                if (Actions[j].Operation == 5)
+                                {
+                                    OutArr.Remove(Actions[j].Out1);
+                                }
+                                else
+                                {
+                                    OutArr.Add(Actions[j].Out1);
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+                
+            
+            #endregion
+
+
+            System.TimeSpan ts = stopWatch.Elapsed;
+            stopWatch.Stop();
+            string elapsedTime = System.String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+            ts.Hours, ts.Minutes, ts.Seconds,
+            ts.Milliseconds / 10);
+            System.Console.WriteLine("RunTime " + elapsedTime);
 
             #region Сортировка действий
 
@@ -269,7 +401,7 @@ namespace Gemba
             });
 
             #endregion
-
+            
             //#region Решатель
 
             //foreach (var Action in Actions)
@@ -294,12 +426,7 @@ namespace Gemba
             //}
 
             //#endregion
-            System.TimeSpan ts = stopWatch.Elapsed;
-            stopWatch.Stop();
-            string elapsedTime = System.String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds,
-            ts.Milliseconds / 10);
-            System.Console.WriteLine("RunTime " + elapsedTime);
+
         }
     }
 }

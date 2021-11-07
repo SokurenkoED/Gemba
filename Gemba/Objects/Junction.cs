@@ -16,6 +16,5 @@ namespace Gemba.Objects
         public int ToElem { get; set; }
 
         public int ToPort { get; set; }
-
     }
 }
