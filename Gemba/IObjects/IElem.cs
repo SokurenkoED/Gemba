@@ -10,6 +10,6 @@ namespace Gemba.IObjects
 
         public int Operation { get; set; }
 
-
+        public int TypeVariable { get; set; }
     }
 }

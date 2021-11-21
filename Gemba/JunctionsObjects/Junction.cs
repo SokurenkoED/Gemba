@@ -17,5 +17,7 @@ namespace Gemba.Objects
 
         public int ToPort { get; set; }
 
+        public int TypeVariable = 1;
+
     }
 }

@@ -15,5 +15,10 @@ namespace Gemba.ImageObjects
         public string ImageElemValue { get ; set ; }
         public int ImageElemPortsCount { get ; set ; }
 
+        // Инфа о подстоединенных портах и связях
+
+        public List<int> PortsInId { get; set; }
+        public List<int> PortsOutId { get; set; }
+
     }
 }

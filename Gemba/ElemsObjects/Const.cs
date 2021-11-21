@@ -8,5 +8,7 @@ namespace Gemba.Objects
     class Const : Elem
     {
         public string ElemValue { get; set; }
+
+        
     }
 }

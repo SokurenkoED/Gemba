@@ -23,6 +23,8 @@ namespace Gemba
 
             List<Junction> ConstJunctions = new List<Junction>(); // Здесь записаны все связи, у которых левый элемент - константа
 
+
+
             List<IAction> Actions = new List<IAction>();
             List<IVariable> Variables = new List<IVariable>();
 
@@ -41,27 +43,66 @@ namespace Gemba
 
             #region Создаем картинки элементов на рабочей плоскости
 
-            ImageSummerElem Sum1 = new ImageSummerElem(ref Elems) { ImageElemId = ImageElems.Count + 1};
+            ImageSummerElem Sum1 = new ImageSummerElem(ref Elems) 
+            { 
+                ImageElemId = ImageElems.Count + 1,
+                ImageElemPortsCount = 2,
+                PortsInId = new List<int> { 1, 4 },
+                PortsOutId = new List<int> { 5 }
+            };
             Sum1.SetParamsToElem();
             ImageElems.Add(Sum1);
 
-            ImageSubstructionElem Minus1 = new ImageSubstructionElem(ref Elems) { ImageElemId = ImageElems.Count + 1};
+            ImageSubstructionElem Minus1 = new ImageSubstructionElem(ref Elems) 
+            { 
+                ImageElemId = ImageElems.Count + 1,
+                ImageElemPortsCount = 2,
+                PortsInId = new List<int> { 2, 3 },
+                PortsOutId = new List<int> { 4 }
+            };
             Minus1.SetParamsToElem();
             ImageElems.Add(Minus1);
 
-            ImageConstElem Const1 = new ImageConstElem(ref Elems) { ImageElemId = ImageElems.Count + 1, ImageElemValue = "200"};
+            ImageConstElem Const1 = new ImageConstElem(ref Elems) 
+            { ImageElemId = ImageElems.Count + 1,
+                ImageElemValue = "200",
+                ImageElemPortsCount = 1,
+                PortsInId = new List<int>(),
+                PortsOutId = new List<int> { 1 }
+            };
             Const1.SetParamsToElem();
             ImageElems.Add(Const1);
 
-            ImageConstElem Const2 = new ImageConstElem(ref Elems) { ImageElemId = ImageElems.Count + 1, ImageElemValue = "100" };
+            ImageConstElem Const2 = new ImageConstElem(ref Elems) 
+            {
+                ImageElemId = ImageElems.Count + 1,
+                ImageElemValue = "100",
+                ImageElemPortsCount = 1,
+                PortsInId = new List<int>(),
+                PortsOutId = new List<int> { 2 }
+            };
             Const2.SetParamsToElem();
             ImageElems.Add(Const2);
 
-            ImageConstElem Const3 = new ImageConstElem(ref Elems) { ImageElemId = ImageElems.Count + 1, ImageElemValue = "50" };
+            ImageConstElem Const3 = new ImageConstElem(ref Elems) 
+            { 
+                ImageElemId = ImageElems.Count + 1,
+                ImageElemValue = "50",
+                ImageElemPortsCount = 1,
+                PortsInId = new List<int>(),
+                PortsOutId = new List<int> { 3 }
+            };
             Const3.SetParamsToElem();
             ImageElems.Add(Const3);
 
-            ImageExitElem Exit1 = new ImageExitElem(ref Elems) { ImageElemId = ImageElems.Count + 1, ImageElemValue = "????????" };
+            ImageExitElem Exit1 = new ImageExitElem(ref Elems) 
+            { 
+                ImageElemId = ImageElems.Count + 1,
+                ImageElemValue = "????????",
+                ImageElemPortsCount = 1,
+                PortsInId = new List<int> { 5 },
+                PortsOutId = new List<int>()
+            };
             Exit1.SetParamsToElem();
             ImageElems.Add(Exit1);
 
@@ -133,15 +174,74 @@ namespace Gemba
 
             #endregion
 
+
+
             #region Пишем действия
 
-            foreach (var ConstJunction in ConstJunctions) // Надо сначала создать переменные
+
+            // Создали первые действия: присваивания значений от костант к связям
+            foreach (var ConstJunction in ConstJunctions)
             {
-                Actions.Add(new Action { Operation = 3, In = new List<int>() { Elems[ConstJunction.FromElem].ElemId }, Out1 = Elems[ConstJunction.ToElem].ElemId });
+                Actions.Add(new Action { 
+                    ActionId = id++,
+                    Operation = 3,
+                    In = new List<int>() { Elems[ConstJunction.FromElem].ElemId },
+                    VarTypeIn = new List<int>() { Elems[ConstJunction.FromElem].TypeVariable } ,
+                    VarTypeOut = Junctions[ConstJunction.ToElem].TypeVariable,
+                    Out1 = Junctions[ConstJunction.ToElem].ToElem
+                });
+            }
+
+            // Найдем перебором следующую связь, создадим операцию
+
+
+            //1) Сначала проверим, все ли связи заходят в элемент (Если все заходят, значит его можно посчитать)
+            //2) Для этого элемента мы находим следующую связь
+            //3) Сделаем операцию
+            //4) Удалим используемые связи
+            //5) Добавим новую связь в массив
+
+            #region Записали сколько связей входит в каждый элемент
+
+            Dictionary<int, int> DictionaryElems = new Dictionary<int, int>();
+            foreach (var ConstJunction in ConstJunctions)
+            {
+                if (DictionaryElems.ContainsKey(ConstJunction.JuncId))
+                {
+                    DictionaryElems[ConstJunction.JuncId] += 1;
+                }
+                else
+                {
+                    DictionaryElems.Add(ConstJunction.JuncId,1);
+                }
             }
 
             #endregion
 
+
+            #region Записали элементы, которые могут быть посчитаны
+
+            List<int> VarElems = new List<int>();
+            foreach (var item in DictionaryElems)
+            {
+                if (ImageElems[item.Key].ImageElemPortsCount == item.Value)
+                {
+                    VarElems.Add(item.Key);
+                }
+            }
+            
+            #endregion
+
+            #endregion
+
+
+            //foreach (var Junction in Junctions)
+            //{
+            //    if (Junctions[ConstJunction.ToElem].ToElem == Junction.FromElem)// Если правый элемент является левым элементом у связи, то мы добавляем эту связь в массив с актуальными связями (Junctions1)
+            //    {
+
+            //    }
+            //}
 
 
             // <----------------------------------------------- Старый макет ----------------------------------------------->
