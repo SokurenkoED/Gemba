@@ -11,6 +11,6 @@ namespace Gemba.Objects
         public int VarType { get; set; }
         public string VarValue { get; set; }
 
-        public float SolvVar { get; set; }
+        public double SolvVar { get; set; }
     }
 }

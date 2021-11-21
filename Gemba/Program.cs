@@ -1,22 +1,31 @@
-﻿
-using Gemba.IObjects;
+﻿using Gemba.IObjects;
 using Gemba.Objects;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Gemba
 {
     class Program
     {
+        public class LibraryImport
+        {
+            [DllImport("AutoSolverDLL.dll", CallingConvention = CallingConvention.StdCall)]
+            public static extern double Integrator(double[] In, double Out, double dt,double[] Parameters);
+            [DllImport("AutoSolverDLL.dll", CallingConvention = CallingConvention.StdCall)]
+            public static extern double Summator(double[] In, int n_in);
+            [DllImport("AutoSolverDLL.dll", CallingConvention = CallingConvention.StdCall)]
+            public static extern double Subtractor(double[] In);
+        }
         static void Main(string[] args)
         {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            HashSet<Elem> Elems = new HashSet<Elem>(); // 6 шт
-            HashSet<IJunction> Junctions = new HashSet<IJunction>(); // 5 шт
+            List<Elem> Elems = new List<Elem>(); // 6 шт
+            List<IJunction> Junctions = new List<IJunction>(); // 5 шт
             List<IAction> Actions = new List<IAction>();
-            HashSet<IVariable> Variables = new HashSet<IVariable>();
+            List<IVariable> Variables = new List<IVariable>();
 
             int id = 0; // Переменная для записи Variables
 
@@ -45,7 +54,7 @@ namespace Gemba
 
             //#region Создаем связи
 
-            //Junctions.Add(new Junction {JuncId = 1, FromElem = 3, FromPort = 1, ToElem = 1, ToPort = 1 });
+            //Junctions.Add(new Junction { JuncId = 1, FromElem = 3, FromPort = 1, ToElem = 1, ToPort = 1 });
             //Junctions.Add(new Junction { JuncId = 2, FromElem = 4, FromPort = 1, ToElem = 2, ToPort = 1 });
             //Junctions.Add(new Junction { JuncId = 3, FromElem = 5, FromPort = 1, ToElem = 2, ToPort = 2 });
             //Junctions.Add(new Junction { JuncId = 4, FromElem = 2, FromPort = 1, ToElem = 1, ToPort = 2 });
@@ -65,7 +74,7 @@ namespace Gemba
             int j4 = 4;
             int j5 = 5;
 
-            for (int i = 0; i < 20000; i++)
+            for (int i = 0; i < 1; i++)
             {
                 Elems.Add(new Summer { ElemId = i1, Operation = 1 });
                 Elems.Add(new Subtraction { ElemId = i2, Operation = 2 });
@@ -209,7 +218,7 @@ namespace Gemba
             #region Присваивание ID всем действиям
 
             id = 0;
-            HashSet<int> OutArr = new HashSet<int>();
+            List<int> OutArr = new List<int>();
             foreach (var Action in Actions)
             {
                 if (Action.Operation == 3)
@@ -271,27 +280,50 @@ namespace Gemba
             #endregion
 
             //#region Решатель
-
-            //foreach (var Action in Actions)
-            //{
-            //    if (Action.Operation == 3)
-            //    {
-            //        Variables[Action.Out1 - 1].SolvVar = float.Parse(Variables[Action.In[0]-1].VarValue);
-            //    }
-            //    else if (Action.Operation == 1)
-            //    {
-            //        Variables[Action.Out1 - 1].SolvVar = Variables[Action.In[0]-1].SolvVar + Variables[Action.In[1]-1].SolvVar;
-            //    }
-            //    else if (Action.Operation == 2)
-            //    {
-            //        Variables[Action.Out1 - 1].SolvVar = Variables[Action.In[0]-1].SolvVar - Variables[Action.In[1]-1].SolvVar;
-            //    }
-            //    else if (Action.Operation == 5)
-            //    {
-            //        Variables[Action.Out1 - 1].SolvVar = Variables[Action.In[0] - 1].SolvVar;
-            //        //System.Console.WriteLine(Variables[Action.Out1 - 1].SolvVar);
-            //    }
-            //}
+            //double[] tavo = new double[2];
+            //double[] kavo = new double[3];
+            //kavo[0] = 2.28;
+            //kavo[1] = 3.22;
+            //kavo[2] = 14.88;
+            //double Out1 = 0;
+            //double dt = 0.01;
+            //int OutGavno = 0;
+            //System.Console.WriteLine(LibraryImport.Integrator(kavo, 0, 0.01, tavo));
+            //System.Console.WriteLine(LibraryImport.Summator(kavo, 3));
+            //System.Console.WriteLine(kavo[0]);
+            //Gavno.Summer(2, 226, ref OutGavno);
+            //System.Console.WriteLine(OutGavno);
+            List<double> VarArr;
+            foreach (var Action in Actions)
+            {
+                if (Action.Operation == 3)
+                {
+                    Variables[Action.Out1 - 1].SolvVar = float.Parse(Variables[Action.In[0] - 1].VarValue);
+                }
+                else if (Action.Operation == 1)
+                {
+                    VarArr = new List<double>();
+                    for (int i = 0; i < Action.In.Count; i++)
+                    {
+                        VarArr.Add(Variables[Action.In[i] - 1].SolvVar);
+                    }
+                    Variables[Action.Out1 - 1].SolvVar = LibraryImport.Summator(VarArr.ToArray(), VarArr.Count);
+                }
+                else if (Action.Operation == 2)
+                {
+                    VarArr = new List<double>();
+                    for (int i = 0; i < Action.In.Count; i++)
+                    {
+                        VarArr.Add(Variables[Action.In[i] - 1].SolvVar);
+                    }
+                    Variables[Action.Out1 - 1].SolvVar = LibraryImport.Subtractor(VarArr.ToArray());
+                }
+                else if (Action.Operation == 5)
+                {
+                    Variables[Action.Out1 - 1].SolvVar = Variables[Action.In[0] - 1].SolvVar;
+                    System.Console.WriteLine(Variables[Action.Out1 - 1].SolvVar);
+                }
+            }
 
             //#endregion
             System.TimeSpan ts = stopWatch.Elapsed;
